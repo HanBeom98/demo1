@@ -1,5 +1,6 @@
 package com.example.demo.util;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -53,27 +54,18 @@ class JwtUtilTest {
 
   @Test
   @DisplayName("JWT 유효성 검사 - 만료된 토큰")
-  void validateExpiredToken() throws InterruptedException {
-    // Given
-    jwtUtil = new JwtUtil();
-    jwtUtil.init();
-    jwtUtil = new JwtUtil() {
-      @Override
-      public String createToken(String username) {
-        return io.jsonwebtoken.Jwts.builder()
-            .setSubject(username)
-            .setIssuedAt(new java.util.Date(System.currentTimeMillis() - 3600000)) // 1시간 전 발급
-            .setExpiration(new java.util.Date(System.currentTimeMillis() - 1000)) // 이미 만료됨
-            .signWith(jwtUtil.key, io.jsonwebtoken.SignatureAlgorithm.HS256)
-            .compact();
-      }
-    };
-    String expiredToken = jwtUtil.createToken("testuser");
+  void validateExpiredToken() {
+    // Given: 1시간 전 발급, 1초 후 만료
+    String expiredToken = io.jsonwebtoken.Jwts.builder()
+        .setSubject("testuser")
+        .setIssuedAt(new java.util.Date(System.currentTimeMillis() - 3600000)) // 1시간 전 발급
+        .setExpiration(new java.util.Date(System.currentTimeMillis() - 1000))  // 이미 만료됨
+        .signWith(jwtUtil.key, io.jsonwebtoken.SignatureAlgorithm.HS256)
+        .compact();
 
-    // When
-    boolean isValid = jwtUtil.validateToken(expiredToken);
-
-    // Then
-    assertFalse(isValid, "만료된 토큰은 유효하지 않아야 합니다.");
+    // When & Then: ExpiredJwtException 발생 여부 확인
+    assertThrows(ExpiredJwtException.class, () -> {
+      jwtUtil.validateToken(expiredToken);
+    }, "만료된 토큰은 ExpiredJwtException을 던져야 합니다.");
   }
 }
