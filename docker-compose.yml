@@ -10,6 +10,8 @@ services:
       - "8080:8080"
     environment:
       SPRING_PROFILES_ACTIVE: local
+    depends_on:
+      - mysql
     networks:
       - demo-network
 
@@ -21,8 +23,6 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: gksqja9691@
       MYSQL_DATABASE: demo
-      MYSQL_USER: root
-      MYSQL_PASSWORD: gksqja96912@
     volumes:
       - mysql-data:/var/lib/mysql
     networks:
