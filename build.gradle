@@ -45,7 +45,7 @@ dependencies {
 	testImplementation 'org.mockito:mockito-junit-jupiter:5.7.0'
 }
 
-tasks.named('test') {
+tasks.withType(Test) {
 	useJUnitPlatform()
 	systemProperty "spring.profiles.active", "test"
 }
