@@ -11,7 +11,7 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-  Key key;
+  private Key key;
   private static final long EXPIRATION_TIME = 1000 * 60 * 60; // 1시간
   private static final String SECRET = "MySecretKeyMySecretKeyMySecretKey"; // 꼭 32바이트 이상!
 
@@ -40,12 +40,19 @@ public class JwtUtil {
         .getSubject();
   }
 
-  // JWT 유효성 검증
+  // JWT 유효성 검증 (ExpiredJwtException을 그대로 던짐)
   public boolean validateToken(String token) {
     try {
-      Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+      Jwts.parserBuilder()
+          .setSigningKey(key)
+          .build()
+          .parseClaimsJws(token);
       return true;
+    } catch (ExpiredJwtException e) {
+      System.out.println("만료된 JWT입니다.");
+      throw e;  // ✅ 예외를 그대로 던져서 테스트에서 감지할 수 있게 변경
     } catch (Exception e) {
+      System.out.println("유효하지 않은 JWT입니다.");
       return false;
     }
   }
