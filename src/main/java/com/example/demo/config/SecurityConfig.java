@@ -49,14 +49,25 @@ public class SecurityConfig {
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http.csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/", "/index.html").permitAll()  // 루트 페이지 접근 허용
-            .requestMatchers("/api/auth/**").permitAll()     // 인증 경로는 모두 허용
-            .requestMatchers(HttpMethod.GET, "/api/public/**").permitAll() // GET 방식 public 경로
+            // Swagger 경로 허용
+            .requestMatchers(
+                "/swagger-ui.html",
+                "/swagger-ui/**",
+                "/v3/api-docs/**",
+                "/v3/api-docs",
+                "/webjars/**",
+                "/swagger-resources/**"
+            ).permitAll()
+
+            .requestMatchers("/", "/index.html").permitAll()
+            .requestMatchers("/api/auth/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/public/**").permitAll()
             .anyRequest().authenticated()
         )
         .authenticationProvider(authenticationProvider())
         .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
     return http.build();
   }
+
 
 }

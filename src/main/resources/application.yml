@@ -12,3 +12,9 @@ spring:
     console:
       enabled: true
 
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
