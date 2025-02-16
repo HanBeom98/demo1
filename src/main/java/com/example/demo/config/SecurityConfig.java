@@ -49,8 +49,9 @@ public class SecurityConfig {
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http.csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/auth/**").permitAll()  // 회원가입, 로그인은 모두 허용
-            .requestMatchers("/api/users/me").authenticated() // 인증된 사용자만 허용
+            .requestMatchers("/", "/index.html").permitAll()  // 루트 페이지 접근 허용
+            .requestMatchers("/api/auth/**").permitAll()     // 인증 경로는 모두 허용
+            .requestMatchers(HttpMethod.GET, "/api/public/**").permitAll() // GET 방식 public 경로
             .anyRequest().authenticated()
         )
         .authenticationProvider(authenticationProvider())
